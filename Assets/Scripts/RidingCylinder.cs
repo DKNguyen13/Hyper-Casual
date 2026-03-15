@@ -9,31 +9,20 @@ public class RidingCylinder : MonoBehaviour
     {
         _value += value;
 
-        if (_value >= 1f)
+        if (_value > 1)
         {
-            float leftValue = _value - 1f;
-
-            if (leftValue < 0.001f)
-                leftValue = 0f;
-
+            float leftValue = _value - 1;
             _value = 1f;
-
             int cylinderCount = PlayerController.Instance.cylinders.Count;
 
-            transform.localPosition = new Vector3(
-                transform.localPosition.x,
-                -0.5f * (cylinderCount - 1) - 0.25f,
-                transform.localPosition.z
-            );
-
+            transform.localPosition = new Vector3(transform.localPosition.x, -0.5f * (cylinderCount - 1) - 0.25f, transform.localPosition.z);
             transform.localScale = new Vector3(0.5f, transform.localScale.y, 0.5f);
-
-            if (leftValue > 0)
-                PlayerController.Instance.CreateCylinder(leftValue);
+            PlayerController.Instance.CreateCylinder(leftValue);
         }
         else if (_value < 0)
         {
             PlayerController.Instance.DestroyCylinder(this);
+            return;
         }
         else
         {
@@ -41,5 +30,10 @@ public class RidingCylinder : MonoBehaviour
             transform.localPosition = new Vector3(transform.localPosition.x, -0.5f * (cylinderCount - 1) - 0.25f * _value, transform.localPosition.z);
             transform.localScale = new Vector3(0.5f * _value, transform.localScale.y, 0.5f * _value);
         }
+    }
+
+    public float GetValue()
+    {
+        return _value;
     }
 }

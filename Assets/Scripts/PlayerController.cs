@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float _runningSpeed;
     [SerializeField] private float _xSpeed;
     private float _currentRunningSpeed;
+    private float _baseY;
 
     [SerializeField] private GameObject _ridingCylinderPrefab;
     public List<RidingCylinder> cylinders;
@@ -26,6 +28,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         _currentRunningSpeed = _runningSpeed;    
+        _baseY = transform.position.y;
     }
 
     void Update()
@@ -52,9 +55,17 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.CompareTag("AddCylinder"))
         {
-            collision.enabled = false;collision.enabled = false;
+            collision.enabled = false;
             IncrementCylinderVolume(0.1f);
             Destroy(collision.gameObject);
+        }
+    }
+
+    void OnTriggerStay(Collider other)
+    {
+        if (other.CompareTag("Trap"))
+        {
+            IncrementCylinderVolume(-Time.fixedDeltaTime);
         }
     }
 
@@ -89,5 +100,20 @@ public class PlayerController : MonoBehaviour
     {
         cylinders.Remove(cylinder);
         Destroy(cylinder.gameObject);
+        UpdatePlayerHeight();
+    }
+
+    public void UpdatePlayerHeight()
+    {
+        float height = 0f;
+
+        foreach (var cylinder in cylinders)
+        {
+            height += cylinder.GetValue() * 0.5f;
+        }
+
+        Vector3 pos = transform.position;
+        pos.y = _baseY + height;
+        transform.position = pos;
     }
 }
